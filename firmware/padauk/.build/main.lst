@@ -1,0 +1,642 @@
+                                      1 ;--------------------------------------------------------
+                                      2 ; File Created by SDCC : free open source ANSI-C Compiler
+                                      3 ; Version 4.2.0 #13081 (Linux)
+                                      4 ;--------------------------------------------------------
+                                      5 	.module main
+                                      6 	.optsdcc -mpdk13
+                                      7 	
+                                      8 
+                                      9 ; default segment ordering in RAM for linker
+                                     10 	.area DATA
+                                     11 	.area OSEG (OVR,DATA)
+                                     12 
+                                     13 ;--------------------------------------------------------
+                                     14 ; Public variables in this module
+                                     15 ;--------------------------------------------------------
+                                     16 	.globl _main
+                                     17 	.globl _interrupt
+                                     18 	.globl __sdcc_external_startup
+                                     19 	.globl _tonePA3ND
+                                     20 	.globl _noTone
+                                     21 	.globl __misc
+                                     22 	.globl __gpcs
+                                     23 	.globl __gpcc
+                                     24 	.globl __bgtr
+                                     25 	.globl __tm2b
+                                     26 	.globl __tm2s
+                                     27 	.globl __tm2ct
+                                     28 	.globl __tm2c
+                                     29 	.globl __t16c
+                                     30 	.globl __t16m
+                                     31 	.globl __papl
+                                     32 	.globl __paph
+                                     33 	.globl __pac
+                                     34 	.globl __pa
+                                     35 	.globl __padier
+                                     36 	.globl __integs
+                                     37 	.globl __intrq
+                                     38 	.globl __inten
+                                     39 	.globl __eoscr
+                                     40 	.globl __ilrcr
+                                     41 	.globl __ihrcr
+                                     42 	.globl __clkmd
+                                     43 	.globl __sp
+                                     44 	.globl __flag
+                                     45 	.globl _idle_cnt
+                                     46 	.globl _set_seconds
+                                     47 	.globl _seconds
+                                     48 	.globl _tone_cnt
+                                     49 	.globl _mode_now
+                                     50 	.globl _prev_quarter_seconds
+                                     51 	.globl _quarter_seconds
+                                     52 	.globl _tonePA3ND_PARM_1
+                                     53 ;--------------------------------------------------------
+                                     54 ; special function registers
+                                     55 ;--------------------------------------------------------
+                                     56 	.area RSEG (ABS)
+      000000                         57 	.org 0x0000
+                           000000    58 __flag	=	0x0000
+                           000002    59 __sp	=	0x0002
+                           000003    60 __clkmd	=	0x0003
+                           00000B    61 __ihrcr	=	0x000b
+                           00001F    62 __ilrcr	=	0x001f
+                           00000A    63 __eoscr	=	0x000a
+                           000004    64 __inten	=	0x0004
+                           000005    65 __intrq	=	0x0005
+                           00000C    66 __integs	=	0x000c
+                           00000D    67 __padier	=	0x000d
+                           000010    68 __pa	=	0x0010
+                           000011    69 __pac	=	0x0011
+                           000012    70 __paph	=	0x0012
+                           000013    71 __papl	=	0x0013
+                           000006    72 __t16m	=	0x0006
+      000000                         73 __t16c::
+      000000                         74 	.ds 2
+                           00001C    75 __tm2c	=	0x001c
+                           00001D    76 __tm2ct	=	0x001d
+                           000017    77 __tm2s	=	0x0017
+                           000009    78 __tm2b	=	0x0009
+                           000019    79 __bgtr	=	0x0019
+                           00001A    80 __gpcc	=	0x001a
+                           00001E    81 __gpcs	=	0x001e
+                           00001B    82 __misc	=	0x001b
+                                     83 ;--------------------------------------------------------
+                                     84 ; ram data
+                                     85 ;--------------------------------------------------------
+                                     86 	.area DATA
+      000000                         87 _tonePA3ND_PARM_1:
+      000000                         88 	.ds 1
+      000001                         89 _quarter_seconds::
+      000001                         90 	.ds 1
+      000002                         91 _prev_quarter_seconds::
+      000002                         92 	.ds 1
+      000003                         93 _mode_now::
+      000003                         94 	.ds 1
+      000004                         95 _tone_cnt::
+      000004                         96 	.ds 1
+      000005                         97 _seconds::
+      000005                         98 	.ds 2
+      000007                         99 _set_seconds::
+      000007                        100 	.ds 2
+      000009                        101 _idle_cnt::
+      000009                        102 	.ds 1
+                                    103 ;--------------------------------------------------------
+                                    104 ; overlayable items in ram
+                                    105 ;--------------------------------------------------------
+                                    106 ;--------------------------------------------------------
+                                    107 ; Stack segment in internal ram
+                                    108 ;--------------------------------------------------------
+                                    109 	.area	SSEG
+      000000                        110 __start__stack:
+      000000                        111 	.ds	1
+                                    112 
+                                    113 ;--------------------------------------------------------
+                                    114 ; absolute external ram data
+                                    115 ;--------------------------------------------------------
+                                    116 	.area DABS (ABS)
+                                    117 ;--------------------------------------------------------
+                                    118 ; interrupt vector
+                                    119 ;--------------------------------------------------------
+                                    120 	.area HOME
+      000000                        121 __interrupt_vect:
+                                    122 	.area	HEADER (ABS)
+      000020                        123 	.org	 0x0020
+      000020rBEr18                  124 	goto	_interrupt
+                                    125 ;--------------------------------------------------------
+                                    126 ; global & static initialisations
+                                    127 ;--------------------------------------------------------
+                                    128 	.area HOME
+                                    129 	.area GSINIT
+                                    130 	.area GSFINAL
+                                    131 	.area GSINIT
+                                    132 	.area	PREG (ABS)
+      000000                        133 	.org 0x00
+      000000                        134 p::
+      000000                        135 	.ds 2
+                                    136 	.area	HEADER (ABS)
+      000000                        137 	.org 0x0000
+      000000 00 00                  138 	nop
+      000002r81r09                  139 	clear	p+1
+      000004r00r17                  140 	mov	a, #s_OSEG
+      000006r01r10                  141 	add	a, #l_OSEG + 1
+      000008 FE 14                  142 	and	a, #0xfe
+      00000A 82 00                  143 	mov.io	sp, a
+      00000CrA4r1C                  144 	call	__sdcc_external_startup
+      00000Er00r18                  145 	goto	s_GSINIT
+                                    146 	.area GSINIT
+      000000                        147 __sdcc_init_data:
+      000000r00r17                  148 	mov	a, #s_DATA
+      000002rC0r05                  149 	mov	p, a
+      000004r0Er18                  150 	goto	00002$
+      000006                        151 00001$:
+      000006 00 17                  152 	mov	a, #0x00
+      000008rE0r00                  153 	idxm	p, a
+      00000Ar00r09                  154 	inc	p
+      00000Cr00r17                  155 	mov	a, #s_DATA
+      00000E                        156 00002$:
+      00000Er00r10                  157 	add	a, #l_DATA
+      000010r80r0B                  158 	ceqsn	a, p
+      000012r06r18                  159 	goto	00001$
+                                    160 ;	main.c: 20: uint8_t prev_quarter_seconds = 0;
+      000014r82r09                  161 	clear	_prev_quarter_seconds+0
+                                    162 ;	main.c: 21: uint8_t mode_now = MODE_WAIT;
+      000016r83r09                  163 	clear	_mode_now+0
+                                    164 ;	main.c: 22: uint8_t tone_cnt = 0;
+      000018r84r09                  165 	clear	_tone_cnt+0
+                                    166 ;	main.c: 23: uint16_t seconds = 0, set_seconds = 0;
+      00001Ar85r09                  167 	clear	_seconds+0
+      00001Cr86r09                  168 	clear	_seconds+1
+                                    169 ;	main.c: 23: uint8_t idle_cnt = IDLE_DUR; 
+      00001Er87r09                  170 	clear	_set_seconds+0
+      000020r88r09                  171 	clear	_set_seconds+1
+                                    172 ;	main.c: 24: 
+      000022 02 17                  173 	mov	a, #0x02
+      000024rC9r05                  174 	mov	_idle_cnt+0, a
+                                    175 	.area GSFINAL
+      000000r00r18                  176 	goto	__sdcc_program_startup
+                                    177 ;--------------------------------------------------------
+                                    178 ; Home
+                                    179 ;--------------------------------------------------------
+                                    180 	.area HOME
+                                    181 	.area HOME
+      000000                        182 __sdcc_program_startup:
+      000000rDEr18                  183 	goto	_main
+                                    184 ;	return from main will return to caller
+                                    185 ;--------------------------------------------------------
+                                    186 ; code
+                                    187 ;--------------------------------------------------------
+                                    188 	.area CODE
+                                    189 ;	./Padauk-tone/tone.h: 33: void noTone(void){
+                                    190 ;	-----------------------------------------
+                                    191 ;	 function noTone
+                                    192 ;	-----------------------------------------
+      000000                        193 _noTone:
+                                    194 ;	./Padauk-tone/tone.h: 34: TM2C = 0x00; PA |= (1<<BUZZER_BIT);
+      000000 00 17                  195 	mov	a, #0x00
+      000002 9C 00                  196 	mov.io	__tm2c, a
+      000004 70 0F                  197 	set1.io	__pa, #3
+                                    198 ;	./Padauk-tone/tone.h: 35: }
+      000006 3A 00                  199 	ret
+                                    200 ;	./Padauk-tone/tone.h: 38: void tonePA3ND(uint8_t note){
+                                    201 ;	-----------------------------------------
+                                    202 ;	 function tonePA3ND
+                                    203 ;	-----------------------------------------
+      000008                        204 _tonePA3ND:
+                                    205 ;	./Padauk-tone/tone.h: 39: TM2B = 0x7F;
+      000008 7F 17                  206 	mov	a, #0x7f
+      00000A 89 00                  207 	mov.io	__tm2b, a
+                                    208 ;	./Padauk-tone/tone.h: 40: switch(note){
+      00000C 12 17                  209 	mov	a, #0x12
+      00000Er40r06                  210 	sub	a, _tonePA3ND_PARM_1+0
+      000010 20 0C                  211 	t0sn.io	f, c
+      000012r9Er18                  212 	goto	00118$
+      000014rC0r07                  213 	mov	a, _tonePA3ND_PARM_1+0
+      000016 01 10                  214 	add	a, #0x01
+      000018 17 00                  215 	pcadd	a
+      00001Ar9Er18                  216 	goto	#00118$
+      00001Cr40r18                  217 	goto	#00101$
+      00001Er46r18                  218 	goto	#00102$
+      000020r4Cr18                  219 	goto	#00103$
+      000022r52r18                  220 	goto	#00104$
+      000024r58r18                  221 	goto	#00105$
+      000026r5Er18                  222 	goto	#00106$
+      000028r64r18                  223 	goto	#00107$
+      00002Ar6Ar18                  224 	goto	#00108$
+      00002Cr9Er18                  225 	goto	#00118$
+      00002Er9Er18                  226 	goto	#00118$
+      000030r70r18                  227 	goto	#00109$
+      000032r76r18                  228 	goto	#00110$
+      000034r7Cr18                  229 	goto	#00111$
+      000036r82r18                  230 	goto	#00112$
+      000038r88r18                  231 	goto	#00113$
+      00003Ar8Er18                  232 	goto	#00114$
+      00003Cr94r18                  233 	goto	#00115$
+      00003Er9Ar18                  234 	goto	#00116$
+                                    235 ;	./Padauk-tone/tone.h: 41: case 1:
+      000040                        236 00101$:
+                                    237 ;	./Padauk-tone/tone.h: 42: TM2S = tone_c4;
+      000040 31 17                  238 	mov	a, #0x31
+      000042 97 00                  239 	mov.io	__tm2s, a
+                                    240 ;	./Padauk-tone/tone.h: 43: break;
+      000044r9Er18                  241 	goto	00118$
+                                    242 ;	./Padauk-tone/tone.h: 44: case 2:
+      000046                        243 00102$:
+                                    244 ;	./Padauk-tone/tone.h: 45: TM2S = tone_d4;
+      000046 2F 17                  245 	mov	a, #0x2f
+      000048 97 00                  246 	mov.io	__tm2s, a
+                                    247 ;	./Padauk-tone/tone.h: 46: break;
+      00004Ar9Er18                  248 	goto	00118$
+                                    249 ;	./Padauk-tone/tone.h: 47: case 3:
+      00004C                        250 00103$:
+                                    251 ;	./Padauk-tone/tone.h: 48: TM2S = tone_e4;
+      00004C 2D 17                  252 	mov	a, #0x2d
+      00004E 97 00                  253 	mov.io	__tm2s, a
+                                    254 ;	./Padauk-tone/tone.h: 49: break;
+      000050r9Er18                  255 	goto	00118$
+                                    256 ;	./Padauk-tone/tone.h: 50: case 4:
+      000052                        257 00104$:
+                                    258 ;	./Padauk-tone/tone.h: 51: TM2S = tone_f4;
+      000052 2C 17                  259 	mov	a, #0x2c
+      000054 97 00                  260 	mov.io	__tm2s, a
+                                    261 ;	./Padauk-tone/tone.h: 52: break;
+      000056r9Er18                  262 	goto	00118$
+                                    263 ;	./Padauk-tone/tone.h: 53: case 5:
+      000058                        264 00105$:
+                                    265 ;	./Padauk-tone/tone.h: 54: TM2S = tone_g4;
+      000058 2B 17                  266 	mov	a, #0x2b
+      00005A 97 00                  267 	mov.io	__tm2s, a
+                                    268 ;	./Padauk-tone/tone.h: 55: break;
+      00005Cr9Er18                  269 	goto	00118$
+                                    270 ;	./Padauk-tone/tone.h: 56: case 6:
+      00005E                        271 00106$:
+                                    272 ;	./Padauk-tone/tone.h: 57: TM2S = tone_a4;
+      00005E 2A 17                  273 	mov	a, #0x2a
+      000060 97 00                  274 	mov.io	__tm2s, a
+                                    275 ;	./Padauk-tone/tone.h: 58: break;
+      000062r9Er18                  276 	goto	00118$
+                                    277 ;	./Padauk-tone/tone.h: 59: case 7:
+      000064                        278 00107$:
+                                    279 ;	./Padauk-tone/tone.h: 60: TM2S = tone_b4;
+      000064 29 17                  280 	mov	a, #0x29
+      000066 97 00                  281 	mov.io	__tm2s, a
+                                    282 ;	./Padauk-tone/tone.h: 61: break;
+      000068r9Er18                  283 	goto	00118$
+                                    284 ;	./Padauk-tone/tone.h: 62: case 8:
+      00006A                        285 00108$:
+                                    286 ;	./Padauk-tone/tone.h: 63: TM2S = tone_c5;
+      00006A 28 17                  287 	mov	a, #0x28
+      00006C 97 00                  288 	mov.io	__tm2s, a
+                                    289 ;	./Padauk-tone/tone.h: 64: break;
+      00006Er9Er18                  290 	goto	00118$
+                                    291 ;	./Padauk-tone/tone.h: 65: case 11:
+      000070                        292 00109$:
+                                    293 ;	./Padauk-tone/tone.h: 66: TM2S = tone_c5;
+      000070 28 17                  294 	mov	a, #0x28
+      000072 97 00                  295 	mov.io	__tm2s, a
+                                    296 ;	./Padauk-tone/tone.h: 67: break;
+      000074r9Er18                  297 	goto	00118$
+                                    298 ;	./Padauk-tone/tone.h: 68: case 12:
+      000076                        299 00110$:
+                                    300 ;	./Padauk-tone/tone.h: 69: TM2S = tone_d5;
+      000076 27 17                  301 	mov	a, #0x27
+      000078 97 00                  302 	mov.io	__tm2s, a
+                                    303 ;	./Padauk-tone/tone.h: 70: break;
+      00007Ar9Er18                  304 	goto	00118$
+                                    305 ;	./Padauk-tone/tone.h: 71: case 13:
+      00007C                        306 00111$:
+                                    307 ;	./Padauk-tone/tone.h: 72: TM2S = tone_e5;
+      00007C 1C 17                  308 	mov	a, #0x1c
+      00007E 97 00                  309 	mov.io	__tm2s, a
+                                    310 ;	./Padauk-tone/tone.h: 73: break;
+      000080r9Er18                  311 	goto	00118$
+                                    312 ;	./Padauk-tone/tone.h: 74: case 14:
+      000082                        313 00112$:
+                                    314 ;	./Padauk-tone/tone.h: 75: TM2S = tone_f5;
+      000082 1A 17                  315 	mov	a, #0x1a
+      000084 97 00                  316 	mov.io	__tm2s, a
+                                    317 ;	./Padauk-tone/tone.h: 76: break;
+      000086r9Er18                  318 	goto	00118$
+                                    319 ;	./Padauk-tone/tone.h: 77: case 15:
+      000088                        320 00113$:
+                                    321 ;	./Padauk-tone/tone.h: 78: TM2S = tone_g5;
+      000088 17 17                  322 	mov	a, #0x17
+      00008A 97 00                  323 	mov.io	__tm2s, a
+                                    324 ;	./Padauk-tone/tone.h: 79: break;
+      00008Cr9Er18                  325 	goto	00118$
+                                    326 ;	./Padauk-tone/tone.h: 80: case 16:
+      00008E                        327 00114$:
+                                    328 ;	./Padauk-tone/tone.h: 81: TM2S = tone_a5;
+      00008E 15 17                  329 	mov	a, #0x15
+      000090 97 00                  330 	mov.io	__tm2s, a
+                                    331 ;	./Padauk-tone/tone.h: 82: break;
+      000092r9Er18                  332 	goto	00118$
+                                    333 ;	./Padauk-tone/tone.h: 83: case 17:
+      000094                        334 00115$:
+                                    335 ;	./Padauk-tone/tone.h: 84: TM2S = tone_b5;
+      000094 13 17                  336 	mov	a, #0x13
+      000096 97 00                  337 	mov.io	__tm2s, a
+                                    338 ;	./Padauk-tone/tone.h: 85: break;
+      000098r9Er18                  339 	goto	00118$
+                                    340 ;	./Padauk-tone/tone.h: 86: case 18:
+      00009A                        341 00116$:
+                                    342 ;	./Padauk-tone/tone.h: 87: TM2S = tone_c6;
+      00009A 11 17                  343 	mov	a, #0x11
+      00009C 97 00                  344 	mov.io	__tm2s, a
+                                    345 ;	./Padauk-tone/tone.h: 91: }
+      00009E                        346 00118$:
+                                    347 ;	./Padauk-tone/tone.h: 92: TM2C = (uint8_t)(TM2C_INVERT_OUT | TM2C_MODE_PWM | TM2C_OUT_PA3 | TM2C_CLK_IHRC);
+      00009E 2B 17                  348 	mov	a, #0x2b
+      0000A0 9C 00                  349 	mov.io	__tm2c, a
+                                    350 ;	./Padauk-tone/tone.h: 93: }
+      0000A2 3A 00                  351 	ret
+                                    352 ;	main.c: 26: unsigned char _sdcc_external_startup(void) {
+                                    353 ;	-----------------------------------------
+                                    354 ;	 function _sdcc_external_startup
+                                    355 ;	-----------------------------------------
+      0000A4                        356 __sdcc_external_startup:
+                                    357 ;	main.c: 29: PDK_SET_SYSCLOCK(SYSCLOCK_IHRC_500KHZ);
+      0000A4 7C 17                  358 	mov	a, #0x7c
+      0000A6 83 00                  359 	mov.io	__clkmd, a
+                                    360 ;	main.c: 30: EASY_PDK_CALIBRATE_IHRC(524288, TARGET_VDD_MV);
+      0000A8 52 14                  361 	and	a, #'R'                       
+      0000AA 43 14                  362 	and	a, #'C'                       
+      0000AC 01 14                  363 	and	a, #(1)            
+      0000AE 00 14                  364 	and	a, #((524288))     
+      0000B0 00 14                  365 	and	a, #((524288)>>8)  
+      0000B2 08 14                  366 	and	a, #((524288)>>16) 
+      0000B4 00 14                  367 	and	a, #((524288)>>24) 
+      0000B6 B8 14                  368 	and	a, #((3000))     
+      0000B8 0B 14                  369 	and	a, #((3000)>>8)  
+      0000BA 0B 14                  370 	and	a, #(0x0b)             
+                                    371 ;	main.c: 37: return 0;
+                                    372 ;	main.c: 38: }
+      0000BC 00 01                  373 	ret	#0x00
+                                    374 ;	main.c: 40: void interrupt(void) __interrupt(0) {
+                                    375 ;	-----------------------------------------
+                                    376 ;	 function interrupt
+                                    377 ;	-----------------------------------------
+      0000BE                        378 _interrupt:
+      0000BE 32 00                  379 	push	af
+      0000C0rC0r07                  380 	mov	a, p
+      0000C2 32 00                  381 	push	af
+                                    382 ;	main.c: 41: if (INTRQ & INTRQ_T16) {
+      0000C4 A5 00                  383 	mov.io	a, __intrq
+      0000C6 04 14                  384 	and	a, #0x04
+      0000C8 00 12                  385 	ceqsn	a, #0x00
+      0000CArCEr18                  386 	goto	00109$
+      0000CCrD6r18                  387 	goto	00103$
+      0000CE                        388 00109$:
+                                    389 ;	main.c: 42: quarter_seconds++;
+      0000CErC1r07                  390 	mov	a, _quarter_seconds+0
+      0000D0 01 10                  391 	add	a, #0x01
+      0000D2rC1r05                  392 	mov	_quarter_seconds+0, a
+                                    393 ;	main.c: 43: INTRQ &= ~INTRQ_T16;
+      0000D4 45 0E                  394 	set0.io	__intrq, #2
+      0000D6                        395 00103$:
+                                    396 ;	main.c: 45: }
+      0000D6 33 00                  397 	pop	af
+      0000D8rC0r05                  398 	mov	p, a
+      0000DA 33 00                  399 	pop	af
+      0000DC 3B 00                  400 	reti
+                                    401 ;	main.c: 47: int main(void) {
+                                    402 ;	-----------------------------------------
+                                    403 ;	 function main
+                                    404 ;	-----------------------------------------
+      0000DE                        405 _main:
+                                    406 ;	main.c: 53: T16M = 0b00111010;        // Use System (IHRC) clock source (524.288 kHz), /64, Interrupt on (rising) Bit 10
+      0000DE 3A 17                  407 	mov	a, #0x3a
+      0000E0 86 00                  408 	mov.io	__t16m, a
+                                    409 ;	main.c: 55: T16C = 0;
+      0000E2r80r09                  410 	clear	p
+      0000E4rC0r00                  411 	stt16	p
+                                    412 ;	main.c: 56: INTEN = INTEN_T16;
+      0000E6 04 17                  413 	mov	a, #0x04
+      0000E8 84 00                  414 	mov.io	__inten, a
+                                    415 ;	main.c: 59: INTRQ = 0;
+      0000EA 00 17                  416 	mov	a, #0x00
+      0000EC 85 00                  417 	mov.io	__intrq, a
+                                    418 ;	main.c: 60: __engint();
+      0000EE 38 00                  419 	engint
+                                    420 ;	main.c: 62: while (1) {
+      0000F0                        421 00135$:
+                                    422 ;	main.c: 63: if (quarter_seconds != prev_quarter_seconds) {
+      0000F0rC1r07                  423 	mov	a, _quarter_seconds+0
+      0000F2r82r0B                  424 	ceqsn	a, _prev_quarter_seconds+0
+      0000F4rF8r18                  425 	goto	00216$
+      0000F6rF0r18                  426 	goto	00135$
+      0000F8                        427 00216$:
+                                    428 ;	main.c: 64: prev_quarter_seconds = quarter_seconds;
+      0000F8rC1r07                  429 	mov	a, _quarter_seconds+0
+      0000FArC2r05                  430 	mov	_prev_quarter_seconds+0, a
+                                    431 ;	main.c: 65: noTone();
+      0000FCr00r1C                  432 	call	_noTone
+                                    433 ;	main.c: 66: setPinPullup(UP_BTN_PIN);
+      0000FE F2 0F                  434 	set1.io	__paph, #7
+                                    435 ;	main.c: 67: setPinPullup(ST_BTN_PIN);
+      000100 D2 0F                  436 	set1.io	__paph, #6
+                                    437 ;	main.c: 69: switch (mode_now) {
+      000102rC3r07                  438 	mov	a, _mode_now+0
+      000104 00 12                  439 	ceqsn	a, #0x00
+      000106r0Ar19                  440 	goto	00218$
+      000108r4Er19                  441 	goto	00108$
+      00010A                        442 00218$:
+      00010ArC3r07                  443 	mov	a, _mode_now+0
+      00010C 01 12                  444 	ceqsn	a, #0x01
+      00010Er12r19                  445 	goto	00220$
+      000110r1Cr19                  446 	goto	00101$
+      000112                        447 00220$:
+      000112rC3r07                  448 	mov	a, _mode_now+0
+      000114 02 12                  449 	ceqsn	a, #0x02
+      000116r1Ar19                  450 	goto	00222$
+      000118r02r1A                  451 	goto	00127$
+      00011A                        452 00222$:
+      00011Ar1Ar1A                  453 	goto	00131$
+                                    454 ;	main.c: 70: case MODE_CNT:
+      00011C                        455 00101$:
+                                    456 ;	main.c: 72: if (isPinLow(ST_BTN_PIN)) {
+      00011C B0 00                  457 	mov.io	a, __pa
+      00011E 40 14                  458 	and	a, #0x40
+      000120 00 12                  459 	ceqsn	a, #0x00
+      000122r26r19                  460 	goto	00103$
+                                    461 ;	main.c: 73: mode_now = MODE_WAIT;
+      000124r83r09                  462 	clear	_mode_now+0
+      000126                        463 00103$:
+                                    464 ;	main.c: 75: if ((quarter_seconds & 0b00000011) == 0b00000011) {
+      000126r80r09                  465 	clear	p
+      000128rC1r07                  466 	mov	a, _quarter_seconds+0
+      00012A 03 14                  467 	and	a, #0x03
+      00012Cr80r09                  468 	clear	p
+      00012E 03 12                  469 	ceqsn	a, #0x03
+      000130r1Ar1A                  470 	goto	00131$
+      000132rC0r07                  471 	mov	a, p
+      000134 00 12                  472 	ceqsn	a, #0x00
+      000136r1Ar1A                  473 	goto	00131$
+                                    474 ;	main.c: 77: seconds++;
+      000138r05r09                  475 	inc	_seconds+0
+      00013Ar06r08                  476 	addc	_seconds+1
+                                    477 ;	main.c: 78: if (seconds == set_seconds) {
+      00013CrC5r07                  478 	mov	a, _seconds+0
+      00013Er87r0B                  479 	ceqsn	a, _set_seconds+0
+      000140r1Ar1A                  480 	goto	00131$
+      000142rC6r07                  481 	mov	a, _seconds+1
+      000144r88r0B                  482 	ceqsn	a, _set_seconds+1
+      000146r1Ar1A                  483 	goto	00131$
+                                    484 ;	main.c: 79: mode_now = MODE_END;
+      000148 02 17                  485 	mov	a, #0x02
+      00014ArC3r05                  486 	mov	_mode_now+0, a
+                                    487 ;	main.c: 82: break;
+      00014Cr1Ar1A                  488 	goto	00131$
+                                    489 ;	main.c: 84: case MODE_WAIT:
+      00014E                        490 00108$:
+                                    491 ;	main.c: 85: if ((isPinLow(ST_BTN_PIN)) && (isPinLow(UP_BTN_PIN))) {
+      00014E B0 00                  492 	mov.io	a, __pa
+      000150 40 14                  493 	and	a, #0x40
+      000152 00 12                  494 	ceqsn	a, #0x00
+      000154r74r19                  495 	goto	00124$
+      000156 B0 00                  496 	mov.io	a, __pa
+      000158 80 14                  497 	and	a, #0x80
+      00015A 00 12                  498 	ceqsn	a, #0x00
+      00015Cr74r19                  499 	goto	00124$
+                                    500 ;	main.c: 87: seconds = 0;
+      00015Er85r09                  501 	clear	_seconds+0
+      000160r86r09                  502 	clear	_seconds+1
+                                    503 ;	main.c: 88: set_seconds = 0;
+      000162r87r09                  504 	clear	_set_seconds+0
+      000164r88r09                  505 	clear	_set_seconds+1
+                                    506 ;	main.c: 89: tone_cnt = 0;            
+      000166r84r09                  507 	clear	_tone_cnt+0
+                                    508 ;	main.c: 90: idle_cnt = IDLE_DUR;
+      000168 02 17                  509 	mov	a, #0x02
+      00016ArC9r05                  510 	mov	_idle_cnt+0, a
+                                    511 ;	main.c: 91: tonePA3ND(6); // La
+      00016C 06 17                  512 	mov	a, #0x06
+      00016ErC0r05                  513 	mov	_tonePA3ND_PARM_1+0, a
+      000170r08r1C                  514 	call	_tonePA3ND
+      000172r1Ar1A                  515 	goto	00131$
+      000174                        516 00124$:
+                                    517 ;	main.c: 93: } else if ((isPinHigh(ST_BTN_PIN)) && (isPinLow(UP_BTN_PIN))) {
+      000174 B0 00                  518 	mov.io	a, __pa
+      000176 40 14                  519 	and	a, #0x40
+      000178 00 12                  520 	ceqsn	a, #0x00
+      00017Ar7Er19                  521 	goto	00223$
+      00017CrB2r19                  522 	goto	00120$
+      00017E                        523 00223$:
+      00017E B0 00                  524 	mov.io	a, __pa
+      000180 80 14                  525 	and	a, #0x80
+      000182 00 12                  526 	ceqsn	a, #0x00
+      000184rB2r19                  527 	goto	00120$
+                                    528 ;	main.c: 95: set_seconds+=60;
+      000186rC7r07                  529 	mov	a, _set_seconds+0
+      000188 3C 10                  530 	add	a, #0x3c
+      00018ArC0r05                  531 	mov	p, a
+      00018CrC8r07                  532 	mov	a, _set_seconds+1
+      00018E 10 00                  533 	addc	a
+      000190rC8r05                  534 	mov	_set_seconds+1, a
+      000192rC0r07                  535 	mov	a, p
+      000194rC7r05                  536 	mov	_set_seconds+0, a
+                                    537 ;	main.c: 96: idle_cnt = IDLE_DUR;
+      000196 02 17                  538 	mov	a, #0x02
+      000198rC9r05                  539 	mov	_idle_cnt+0, a
+                                    540 ;	main.c: 97: tonePA3ND(tone_cnt%18+1); // 1to18
+      00019ArC4r07                  541 	mov	a, _tone_cnt+0
+      00019CrC0r05                  542 	mov	__modsint_PARM_1+0, a
+      00019Er81r09                  543 	clear	__modsint_PARM_1+1
+      0001A0 12 17                  544 	mov	a, #0x12
+      0001A2rC0r05                  545 	mov	__modsint_PARM_2+0, a
+      0001A4r81r09                  546 	clear	__modsint_PARM_2+1
+      0001A6r00r1C                  547 	call	__modsint
+      0001A8 01 10                  548 	add	a, #0x01
+      0001AArC0r05                  549 	mov	_tonePA3ND_PARM_1+0, a
+      0001ACr08r1C                  550 	call	_tonePA3ND
+                                    551 ;	main.c: 98: tone_cnt++;
+      0001AEr04r09                  552 	inc	_tone_cnt+0
+      0001B0r1Ar1A                  553 	goto	00131$
+      0001B2                        554 00120$:
+                                    555 ;	main.c: 99: } else if ((isPinLow(ST_BTN_PIN)) && (isPinHigh(UP_BTN_PIN)) && (set_seconds != 0)) {
+      0001B2 B0 00                  556 	mov.io	a, __pa
+      0001B4 40 14                  557 	and	a, #0x40
+      0001B6 00 12                  558 	ceqsn	a, #0x00
+      0001B8rDEr19                  559 	goto	00115$
+      0001BA B0 00                  560 	mov.io	a, __pa
+      0001BC 80 14                  561 	and	a, #0x80
+      0001BE 00 12                  562 	ceqsn	a, #0x00
+      0001C0rC4r19                  563 	goto	00224$
+      0001C2rDEr19                  564 	goto	00115$
+      0001C4                        565 00224$:
+      0001C4rC7r07                  566 	mov	a, _set_seconds+0
+      0001C6r48r07                  567 	or	a, _set_seconds+1
+      0001C8 00 12                  568 	ceqsn	a, #0x00
+      0001CArCEr19                  569 	goto	00225$
+      0001CCrDEr19                  570 	goto	00115$
+      0001CE                        571 00225$:
+                                    572 ;	main.c: 101: mode_now = MODE_CNT;
+      0001CE 01 17                  573 	mov	a, #0x01
+      0001D0rC3r05                  574 	mov	_mode_now+0, a
+                                    575 ;	main.c: 102: idle_cnt = IDLE_DUR;
+      0001D2 02 17                  576 	mov	a, #0x02
+      0001D4rC9r05                  577 	mov	_idle_cnt+0, a
+                                    578 ;	main.c: 104: tonePA3ND(8); // Do
+      0001D6 08 17                  579 	mov	a, #0x08
+      0001D8rC0r05                  580 	mov	_tonePA3ND_PARM_1+0, a
+      0001DAr08r1C                  581 	call	_tonePA3ND
+      0001DCr1Ar1A                  582 	goto	00131$
+      0001DE                        583 00115$:
+                                    584 ;	main.c: 107: else if ((isPinHigh(ST_BTN_PIN)) && (isPinHigh(UP_BTN_PIN))) {
+      0001DE B0 00                  585 	mov.io	a, __pa
+      0001E0 40 14                  586 	and	a, #0x40
+      0001E2 00 12                  587 	ceqsn	a, #0x00
+      0001E4rE8r19                  588 	goto	00226$
+      0001E6r1Ar1A                  589 	goto	00131$
+      0001E8                        590 00226$:
+      0001E8 B0 00                  591 	mov.io	a, __pa
+      0001EA 80 14                  592 	and	a, #0x80
+      0001EC 00 12                  593 	ceqsn	a, #0x00
+      0001EErF2r19                  594 	goto	00227$
+      0001F0r1Ar1A                  595 	goto	00131$
+      0001F2                        596 00227$:
+                                    597 ;	main.c: 108: idle_cnt--;
+      0001F2rC9r08                  598 	dzsn	_idle_cnt+0
+      0001F4r1Ar1A                  599 	goto	00131$
+                                    600 ;	main.c: 109: if (idle_cnt == 0) {
+                                    601 ;	main.c: 110: PADIER = (uint8_t)((1<<UP_BTN_PIN_BIT)|(1<<ST_BTN_PIN_BIT));
+      0001F6 C0 17                  602 	mov	a, #0xc0
+      0001F8 8D 00                  603 	mov.io	__padier, a
+                                    604 ;	main.c: 111: noTone(); // tone off
+      0001FAr00r1C                  605 	call	_noTone
+                                    606 ;	main.c: 113: __stopexe(); 
+      0001FC 37 00                  607 	stopexe
+      0001FE 00 00                  608 	nop
+                                    609 ;	main.c: 119: break;
+      000200r1Ar1A                  610 	goto	00131$
+                                    611 ;	main.c: 121: case MODE_END:
+      000202                        612 00127$:
+                                    613 ;	main.c: 123: if (isPinLow(ST_BTN_PIN)) {
+      000202 B0 00                  614 	mov.io	a, __pa
+      000204 40 14                  615 	and	a, #0x40
+      000206 00 12                  616 	ceqsn	a, #0x00
+      000208r14r1A                  617 	goto	00129$
+                                    618 ;	main.c: 124: seconds = 0;
+      00020Ar85r09                  619 	clear	_seconds+0
+      00020Cr86r09                  620 	clear	_seconds+1
+                                    621 ;	main.c: 125: noTone();
+      00020Er00r1C                  622 	call	_noTone
+                                    623 ;	main.c: 126: mode_now = MODE_WAIT;
+      000210r83r09                  624 	clear	_mode_now+0
+      000212r1Ar1A                  625 	goto	00131$
+      000214                        626 00129$:
+                                    627 ;	main.c: 128: tonePA3ND(17); // Si 5
+      000214 11 17                  628 	mov	a, #0x11
+      000216rC0r05                  629 	mov	_tonePA3ND_PARM_1+0, a
+      000218r08r1C                  630 	call	_tonePA3ND
+                                    631 ;	main.c: 133: }  
+      00021A                        632 00131$:
+                                    633 ;	main.c: 135: clearPinPullup(ST_BTN_PIN);
+      00021A D2 0E                  634 	set0.io	__paph, #6
+                                    635 ;	main.c: 136: clearPinPullup(UP_BTN_PIN);
+      00021C F2 0E                  636 	set0.io	__paph, #7
+      00021ErF0r18                  637 	goto	00135$
+                                    638 ;	main.c: 139: }
+      000220 3A 00                  639 	ret
+                                    640 	.area CODE
+                                    641 	.area CONST
+                                    642 	.area CABS (ABS)

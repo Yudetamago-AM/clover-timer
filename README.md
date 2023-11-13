@@ -4,8 +4,8 @@ Simple Countdown Timer using Padauk MCU
 ![タイマー](./docs/images/タイマー紫2.png)
 
 ## docs
-- [組み立て方（Japanese）](./docs/組み立て方.pdf)
-- [配付資料（Japanese）](./docs/配布資料a.pdf)
+- [組み立て方（Japanese）](./docs/assembly-instruction.pdf)
+- [配付資料（Japanese）](./docs/assembly-instruction-short.pdf)
 
 ## schematic
 ![schematic](./docs/images/sch.PNG)

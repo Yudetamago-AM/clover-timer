@@ -1,3 +1,9 @@
+/*
+This file came from "pdk-digital-clock" project. Thanks!
+Author: serisman
+License: GPLv3
+https://github.com/serisman/pdk-digital-clock/blob/master/firmware/util.h
+*/
 #ifndef __UTIL_H__
 #define __UTIL_H__
 

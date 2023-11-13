@@ -1,4 +1,4 @@
-21748904357560071
+21750603020634686
 Audio_Module
 Reverb_BTDR-1H
 Digital Reverberation Unit, http://www.belton.co.kr/inc/downfile.php?seq=17&file=pdf (footprint from http://www.uk-electronic.de/PDF/BTDR-1.pdf)
@@ -90334,6 +90334,13 @@ varistor
 0
 2
 2
+clover_timer
+Buzzer
+
+
+0
+0
+0
 clover_timer
 CR2032_GND
 

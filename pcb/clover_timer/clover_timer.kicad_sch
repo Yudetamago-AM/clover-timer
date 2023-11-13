@@ -708,7 +708,7 @@
     (property "Value" "Buzzer" (at 158.75 93.2249 90)
       (effects (font (size 1.27 1.27)) (justify right))
     )
-    (property "Footprint" "Buzzer_Beeper:Buzzer_D14mm_H7mm_P10mm" (at 152.4 93.345 90)
+    (property "Footprint" "clover_timer:Buzzer" (at 152.4 93.345 90)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "~" (at 152.4 93.345 90)

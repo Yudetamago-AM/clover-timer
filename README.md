@@ -5,7 +5,7 @@ Simple Countdown Timer using Padauk MCU
 
 ## Docs
 - [組み立て方（Japanese）](./docs/assembly-instruction.pdf)
-- [配付資料（Japanese）](./docs/assembly-instruction-short.pdf)
+- [補足資料（Japanese）](./docs/assembly-instruction-short.pdf)
 
 ## Schematic
 ![schematic](./docs/images/sch.PNG)
